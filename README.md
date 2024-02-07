@@ -1,5 +1,5 @@
 # LocalAdmin V2 [![GitHub release](https://flat.badgen.net/github/release/coveerz/LocalAdmin-on-arm)](https://GitHub.com/northwood-studios/LocalAdmin-V2/releases/) [![Project License](https://flat.badgen.net/github/license/northwood-studios/LocalAdmin-V2)](https://github.com/northwood-studios/LocalAdmin-V2/blob/master/LICENSE)
-Second version of LocalAdmin, tool for hosting dedicated servers for SCP: Secret Laboratory.
+Second version of LocalAdmin, tool for hosting dedicated servers for SCP: Secret Laboratory. But for ARM.
 
 To launch SCP:SL server binary it requires [box64 by ptitSeb](https://github.com/ptitSeb/box64) to be installed.
 
