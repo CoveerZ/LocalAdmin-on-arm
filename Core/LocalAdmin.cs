@@ -30,7 +30,7 @@ namespace LocalAdmin.V2.Core;
 
 public sealed class LocalAdmin : IDisposable
 {
-    public const string VersionString = "2.5.14";
+    public const string VersionString = "2.5.14.000";
     private const ushort DefaultPort = 7777;
 
     private static readonly ConcurrentQueue<string> InputQueue = new();
@@ -58,7 +58,7 @@ public sealed class LocalAdmin : IDisposable
     internal static readonly Stopwatch HeartbeatStopwatch = new();
     internal static LocalAdmin? Singleton;
     internal static ushort GamePort;
-    internal static string? ConfigPath, CurrentConfigPath, LaLogsPath, GameLogsPath;
+    internal static string? ConfigPath, CurrentConfigPath, LaLogsPath, GameLogsPath, BoxPath;
     internal static ulong LogLengthLimit = 25000000000, LogEntriesLimit = 10000000000;
     internal static Config? Configuration;
     internal static DataJson? DataJson;
@@ -95,7 +95,8 @@ public sealed class LocalAdmin : IDisposable
         RestartsLimit,
         RestartsTimeWindow,
         LogLengthLimit,
-        LogEntriesLimit
+        LogEntriesLimit,
+		BoxPath
     }
 
     internal enum HeartbeatStatus : byte
@@ -345,7 +346,11 @@ public sealed class LocalAdmin : IDisposable
                                         ConsoleUtil.WriteLine("Plugin manager has been enabled. USE AT YOUR OWN RISK!", ConsoleColor.Yellow);
                                         DismissPluginsSecurityWarning = true;
                                         break;
-
+									
+									case "--BoxPath":
+										capture = CaptureArgs.BoxPath;
+										break;
+									
                                     case "--config":
                                         capture = CaptureArgs.ConfigPath;
                                         break;
@@ -392,6 +397,11 @@ public sealed class LocalAdmin : IDisposable
                             ConfigPath = arg;
                             capture = CaptureArgs.None;
                             break;
+						
+						case CaptureArgs.BoxPath:
+							BoxPath = arg;
+							capture = CaptureArgs.None;
+							break;
 
                         case CaptureArgs.LaLogsPath:
                             LaLogsPath = arg + Path.DirectorySeparatorChar;
@@ -485,7 +495,31 @@ public sealed class LocalAdmin : IDisposable
                         reconfigure = true;
                 }
             }
-
+			
+			if (BoxPath != null)
+			{
+				if (File.Exists(BoxPath)) 
+				{
+					ConsoleUtil.WriteLine($"Using Box64: {BoxPath}", ConsoleColor.Green);
+				}
+				else
+				{
+					ConsoleUtil.WriteLine($"Box64 not found, crash incoming!", ConsoleColor.Red);
+				}
+			}
+			else
+				BoxPath = "/usr/local/bin/box64";
+				if (File.Exists(BoxPath)) 
+				{
+					ConsoleUtil.WriteLine($"Using Box64: {BoxPath}", ConsoleColor.Green);
+				}
+				else
+				{
+					ConsoleUtil.WriteLine($"Box64 not found, crash incoming!", ConsoleColor.Red);
+				}
+				
+			Thread.Sleep(700);
+			
             SetTerminalTitle();
 
             if (reconfigure)
@@ -772,7 +806,7 @@ public sealed class LocalAdmin : IDisposable
     {
         if (File.Exists(_scpslExecutable))
         {
-            ConsoleUtil.WriteLine("Executing: " + _scpslExecutable, ConsoleColor.DarkGreen);
+            ConsoleUtil.WriteLine("Executing: " + BoxPath + "/" + _scpslExecutable, ConsoleColor.DarkGreen);
             var printStd = Configuration!.LaShowStdoutStderr || _stdPrint;
             var redirectStreams =
                 Configuration.LaLogStdoutStderr || printStd;
@@ -787,9 +821,9 @@ public sealed class LocalAdmin : IDisposable
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = _scpslExecutable,
+                FileName = BoxPath,
                 Arguments =
-                    $"-batchmode -nographics -txbuffer {Configuration.SlToLaBufferSize} -rxbuffer {Configuration.LaToSlBufferSize} -port{GamePort} -console{Server!.ConsolePort} -id{Environment.ProcessId}{extraArgs} {_gameArguments}",
+                    $"{_scpslExecutable} -batchmode -nographics -txbuffer {Configuration.SlToLaBufferSize} -rxbuffer {Configuration.LaToSlBufferSize} -port{GamePort} -console{Server!.ConsolePort} -id{Environment.ProcessId}{extraArgs} {_gameArguments}",
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
