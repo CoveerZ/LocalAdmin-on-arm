@@ -1,6 +1,8 @@
 # LocalAdmin V2 [![GitHub release](https://flat.badgen.net/github/release/coveerz/LocalAdmin-on-arm)](https://GitHub.com/northwood-studios/LocalAdmin-V2/releases/) [![Project License](https://flat.badgen.net/github/license/northwood-studios/LocalAdmin-V2)](https://github.com/northwood-studios/LocalAdmin-V2/blob/master/LICENSE)
 Second version of LocalAdmin, tool for hosting dedicated servers for SCP: Secret Laboratory. But for ARM.
 
+I also have an installer script and a docker image that works on Pterodactyl. [See here](https://github.com/CoveerZ/pterodactyl-arm-stuff)
+
 To launch SCP:SL server binary it requires [box64 by ptitSeb](https://github.com/ptitSeb/box64) to be installed.
 
 This version is compatible with game version 9.0.0 and newer. Compatible with Linux, didn't try it (or make it) to work on Windows and probably never will.
